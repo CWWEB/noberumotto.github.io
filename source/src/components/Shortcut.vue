@@ -100,8 +100,9 @@ export default {
     open() {
       if (this.$props.app != "") {
         let runAppList = this.$store.state.client.runAppList;
+
         runAppList.push({
-          pid: runAppList.length + 1,
+          pid: this.generatePid(),
           name: this.$props.app,
           args: this.$props.args,
         });
@@ -110,6 +111,9 @@ export default {
           runAppList: runAppList,
         });
       }
+    },
+    generatePid() {
+      return Math.ceil(Math.random() * 100 + Math.random());
     },
   },
 };

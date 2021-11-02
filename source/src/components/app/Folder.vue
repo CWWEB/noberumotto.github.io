@@ -7,6 +7,7 @@
       :icon="'logo-small'"
       ref="aboutwindow"
       :closeBtn="true"
+      :key="'aboutwindow_' + pid"
     >
       <div class="about-panel">
         <div class="icon"><img src="../../assets/logo-small.png" /></div>
@@ -42,8 +43,8 @@
     <div class="border">
       <div class="folder_container" ref="folder_container">
         <shortcut
-          v-for="(item, index) in files"
-          :key="'folder' + index"
+          v-for="(item, index) in shrotcutList"
+          :key="'folder' + pid + index"
           :icon="item.icon"
           :name="item.name"
           :index="index"
@@ -95,6 +96,7 @@ export default {
       //  选中项
       selectedCount: 0,
       statusText: "5 个对象",
+      shrotcutList: [],
       // shrotcutList: [
       //   {
       //     icon: "mycomputer",
@@ -117,7 +119,10 @@ export default {
     };
   },
   mounted() {
-    this.shrotcutList = this.$props.files ? this.$props.files : [];
+    if (this.$props.files) {
+      this.shrotcutList = JSON.parse(JSON.stringify(this.$props.files));
+    }
+
     // this.createDesktopRightMenu();
     this.handleMousedown();
     this.statusText = this.shrotcutList.length + " 个对象";
@@ -278,9 +283,19 @@ export default {
           //  清除选中
           t.shrotcutList.forEach((item, index) => {
             item.selected = false;
+
+            //  更新项目位置
+            item.locationInfo = {
+              x: item.el.$el.getBoundingClientRect().left,
+              y: item.el.$el.getBoundingClientRect().top,
+              w: item.el.$el.offsetWidth,
+              h: item.el.$el.offsetHeight,
+            };
           });
 
           if (ev.target.className == "folder_container") {
+            //  更新项目位置
+
             //  设定状态
             let diffLeft = container.getBoundingClientRect().left;
             let diffTop = container.getBoundingClientRect().top;
@@ -440,7 +455,6 @@ export default {
      * 结束app，每个必须有
      */
     exit() {
-      console.log(this.$props.pid);
       this.$store.dispatch("client/exitapp", this.$props.pid);
     },
   },
@@ -504,6 +518,7 @@ export default {
   height: 0;
   left: 0;
   right: 0;
+  display: none;
 }
 .statusbar {
   border: 1px solid #6d6d6d;

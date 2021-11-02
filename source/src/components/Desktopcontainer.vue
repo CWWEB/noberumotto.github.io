@@ -18,7 +18,6 @@
       v-for="item in client.runAppList"
       :key="item.pid"
       :info="item"
-      v-on:close="onAppClose"
     />
     <div class="selecter" ref="selecter"></div>
   </div>
@@ -114,6 +113,16 @@ export default {
                               title: "试试记事本",
                               subtitle: "试试记事本",
                               data: "data/txt/test.txt",
+                            },
+                          },
+                           {
+                            name: "hello",
+                            app: "Word",
+                            type: "word",
+                            args: {
+                              title: "hello",
+                              subtitle: "hello",
+                              data: "data/md/hello.md",
                             },
                           },
                         ],
@@ -361,20 +370,6 @@ export default {
       //   name: e.app,
       // });
     },
-    onAppClose(app) {
-      //  销毁app
-      let runAppList = this.$store.state.client.runAppList;
-      runAppList.forEach((item, index) => {
-        if (item.pid == app.pid) {
-          runAppList.splice(index, 1);
-          return;
-        }
-      });
-
-      this.$store.dispatch("client/set", {
-        runAppList: runAppList,
-      });
-    },
   },
 };
 </script>
@@ -403,5 +398,6 @@ export default {
   height: 0;
   left: 0;
   right: 0;
+  display: none;
 }
 </style>

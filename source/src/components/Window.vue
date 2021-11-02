@@ -27,6 +27,7 @@
             v-on:click.native="clickBtn(0)"
             :width="22"
             :height="22"
+            :key="'wbtn_0_' + wid"
             >×</btn
           >
         </div>
@@ -80,7 +81,7 @@ export default {
     this.browserWidth = window.innerWidth;
     this.browserHeight = window.innerHeight;
 
-// console.log(this.browserWidth);
+    // console.log(this.browserWidth);
     this.init();
     this.windowOpen();
     this.click();
@@ -147,7 +148,6 @@ export default {
       let list = this.$store.state.client.windowList;
       let wid = list.length + 1;
       this.wid = wid;
-
       let window = { wid: wid, el: this.$refs.window };
       list.push(window);
       this.$store.dispatch("client/set", {
@@ -163,7 +163,6 @@ export default {
           item.el.classList.remove("deactivated");
           item.el.firstChild.firstChild.style.background = "#0000aa";
           item.el.firstChild.firstChild.style.color = "#ffffff";
-
         } else {
           item.el.style.zIndex = 1;
           item.el.classList.add("deactivated");
@@ -181,6 +180,7 @@ export default {
     },
     hide() {
       this.isshow = false;
+
     },
     close() {
       this.isshow = false;

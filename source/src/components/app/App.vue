@@ -9,25 +9,35 @@
       :width="width"
       :height="height"
       :canMax="canMax"
+      :key="'appwindow_' + info.pid"
     >
       <!-- <mycomputer v-if="info.name == 'Mycomputer'" /> -->
       <folder
-        v-if="info.name == 'Folder'"
-        :files="info.args.data"
-        :pid="info.pid"
+        v-if="appData.name == 'Folder'"
+        :files="appData.args.data"
+        :pid="appData.pid"
+        :key="appData.pid"
       />
 
       <photos
-        v-if="info.name == 'Photos'"
-        :file="info.args.data"
-        :pid="info.pid"
+        v-if="appData.name == 'Photos'"
+        :file="appData.args.data"
+        :pid="appData.pid"
+        :key="appData.pid"
       />
       <notepad
-        v-if="info.name == 'Notepad'"
-        :file="info.args.data"
-        :pid="info.pid"
+        v-if="appData.name == 'Notepad'"
+        :file="appData.args.data"
+        :pid="appData.pid"
+        :key="appData.pid"
       />
-      <p v-if="err">找不到该应用 {{ info.name }}</p>
+       <word
+        v-if="appData.name == 'Word'"
+        :file="appData.args.data"
+        :pid="appData.pid"
+        :key="appData.pid"
+      />
+      <p v-if="err">找不到该应用 {{ appData.name }}</p>
     </window>
   </div>
 </template>
@@ -37,8 +47,9 @@ import Window from "../Window.vue";
 import Folder from "./Folder.vue";
 import Notepad from "./Notepad.vue";
 import Photos from "./Photos.vue";
+import Word from './Word.vue';
 export default {
-  components: { Window, Folder, Photos, Notepad },
+  components: { Window, Folder, Photos, Notepad, Word },
   name: "App",
   props: {
     info: {
@@ -55,14 +66,17 @@ export default {
       width: 200,
       height: null,
       canMax: false,
+      appData: {},
     };
   },
   mounted() {
+    this.appData = JSON.parse(JSON.stringify(this.$props.info));
+
     this.loadAppInfo();
     this.$refs.window.show().then((btn) => {
       if (btn == 0) {
         //  关闭app
-        this.$emit("close", this.$props.info);
+        this.exit();
       }
     });
   },
@@ -132,12 +146,40 @@ export default {
           }
 
           break;
+           case "Word":
+          this.title = "写字板";
+          this.icon = "word";
+          this.width = 500;
+          this.height = 600;
+
+          if (this.$props.info.args) {
+            this.title = this.$props.info.args.subtitle + " - 写字板（只读）";
+
+            let file = this.$props.info.args.data;
+            // if (file) {
+            //   if (
+            //     file.indexOf("http://") != -1 ||
+            //     file.indexOf("https://") != -1
+            //   ) {
+            //     this.title = "网络照片 - " + this.$props.info.args.subtitle;
+            //     this.icon = "webphoto";
+            //   }
+            // }
+          }
+
+          break;
         default:
           //  找不到
           this.title = "错误";
           this.icon = "warning";
           this.err = true;
       }
+    },
+    /**
+     * 结束app
+     */
+    exit() {
+      this.$store.dispatch("client/exitapp", this.$props.info.pid);
     },
   },
 };
